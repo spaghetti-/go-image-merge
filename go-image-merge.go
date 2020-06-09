@@ -26,6 +26,7 @@ const (
 // Grid holds the data for each grid
 type Grid struct {
 	ImageFilePath   string
+	ImageContents   image.Image
 	BackgroundColor color.Color
 	OffsetX         int
 	OffsetY         int
@@ -97,6 +98,11 @@ func (m *MergeImage) readGridsImages() ([]image.Image, error) {
 	var images []image.Image
 
 	for _, grid := range m.Grids {
+		if grid.ImageContents != nil {
+			img := grid.ImageContents
+			images = append(images, img)
+			continue
+		}
 		img, err := m.readGridImage(grid)
 		if err != nil {
 			return nil, err
@@ -198,6 +204,7 @@ func (m *MergeImage) mergeGrids(images []image.Image) (*image.RGBA, error) {
 // Merge reads the contents of the given file paths, merges them according to given configuration
 func (m *MergeImage) Merge() (*image.RGBA, error) {
 	images, err := m.readGridsImages()
+
 	if err != nil {
 		return nil, err
 	}
